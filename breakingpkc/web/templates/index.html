@@ -1,0 +1,225 @@
+{# Server-rendered shell: catalogs are public; generated private data is fetched only on reveal. #}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f0f3ef">
+  <title>The Quantum Threat to Modern Cryptography: Breaking RSA and ECC Through Quantum Simulation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="/" aria-label="Breaking PKC home">
+      <span class="wordmark-mark" aria-hidden="true">PK</span>
+      <span>BREAKING <b>PKC</b></span>
+    </a>
+    <div class="topbar-meta"><span class="live-dot"></span>LOCAL SIMULATION LAB</div>
+    <div class="edition">EDITION 01 <span>·</span> Avinash M </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="eyebrow"><span>QUANTUM ALGORITHMS</span><span class="eyebrow-rule"></span><span>PUBLIC-KEY CRYPTOGRAPHY</span></p>
+        <h1 id="page-title">
+          The Quantum Threat to Modern Cryptography:
+          <em class="intro-title-continuation">Breaking RSA and ECC Through Quantum Simulation</em>
+        </h1>
+        <p class="intro-subtitle">Different hard problems. One exploitable algebraic regularity.</p>
+        <p class="intro-text">Inspect how Shor's algorithm approaches factoring and elliptic-curve discrete logarithms through small, measurable examples.</p>
+      </div>
+      <div class="orbit-figure" aria-hidden="true">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="orbit-core">Q</div>
+        <span class="orbit-label label-a">RSA</span>
+        <span class="orbit-label label-b">ECC</span>
+        <span class="orbit-label label-c">SHOR</span>
+      </div>
+    </section>
+
+    {# Selection and setup are separate from execution; changing selection does not run a circuit. #}
+    <section class="workspace" aria-label="Algorithm demonstration">
+      <div class="problem-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-index">01 / CHOOSE</p>
+            <h2>Select the problem</h2>
+          </div>
+          <span class="fixed-tag">CURATED TOY INPUTS</span>
+        </div>
+
+        <div class="algorithm-switch" role="tablist" aria-label="Choose cryptographic problem">
+          <button class="algorithm-tab is-active" id="tab-rsa" type="button" role="tab" aria-selected="true" aria-controls="problem-content" data-algorithm="rsa">
+            <span class="tab-number">A</span><span><b>RSA</b><small>INTEGER FACTORING</small></span><span class="tab-arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="algorithm-tab" id="tab-ecc" type="button" role="tab" aria-selected="false" aria-controls="problem-content" data-algorithm="ecc" tabindex="-1">
+            <span class="tab-number tab-number-coral">B</span><span><b>ECC</b><small>ELLIPTIC-CURVE DISCRETE LOG</small></span><span class="tab-arrow" aria-hidden="true">↗</span>
+          </button>
+        </div>
+
+        <div id="problem-content" class="problem-content" role="tabpanel" aria-labelledby="tab-rsa">
+          <p class="problem-kicker" id="problem-kicker">SHOR'S FACTORING ROUTE</p>
+          <h3 id="problem-title">Find the hidden factors.</h3>
+          <p class="problem-description" id="problem-description">Order finding reveals periodic structure in modular multiplication. Classical post-processing turns measured phase information into factor candidates.</p>
+          <div class="concept-path" id="concept-path">
+            <div><span class="path-node node-quantum">Q</span><span><b>Quantum</b><small>Controlled modular multiplication<br>and inverse Fourier transform</small></span></div>
+            <span class="path-connector" aria-hidden="true"></span>
+            <div><span class="path-node node-classical">C</span><span><b>Classical</b><small>Phase fractions, order checks,<br>then gcd factor recovery</small></span></div>
+          </div>
+        </div>
+
+        <section class="key-setup-panel" aria-labelledby="key-setup-title">
+          <div class="key-setup-heading">
+            <p class="section-index">02 / KEY SETUP</p>
+            <h3 id="key-setup-title">Build a keypair</h3>
+          </div>
+          {# Python supplies eligible profiles and exponents instead of trusting free-form parameters. #}
+          <div id="rsa-setup-controls" class="setup-controls">
+            <div class="setup-field">
+              <label for="rsa-profile-input">RSA profile</label>
+              <select id="rsa-profile-input">
+                {% for profile in rsa_toy_profiles %}
+                <option value="{{ profile.catalog_id }}" data-kind="toy" data-exponents="{{ profile.exponents|join(',') }}" {% if loop.first %}selected{% endif %}>Toy RSA key (N={{ profile.modulus }})</option>
+                {% endfor %}
+                <option value="rsa-2048" data-kind="standard">RSA-2048 (setup only)</option>
+                <option value="rsa-3072" data-kind="standard">RSA-3072 (setup only)</option>
+              </select>
+            </div>
+            <div class="setup-field" id="rsa-exponent-field">
+              <label for="rsa-exponent-input">Public exponent</label>
+              <select id="rsa-exponent-input"></select>
+            </div>
+          </div>
+          <div id="ecc-setup-controls" class="setup-controls" hidden>
+            <div class="setup-field">
+              <label for="ecc-profile-input">ECC group</label>
+              <select id="ecc-profile-input">
+                {% for group in ecc_toy_groups %}
+                <option value="{{ group.catalog_id }}" data-kind="toy">Toy F{{ group.curve.prime }} group (q={{ group.order }})</option>
+                {% endfor %}
+                <option value="nist-p256" data-kind="standard">NIST P-256 (setup only)</option>
+                <option value="nist-p384" data-kind="standard">NIST P-384 (setup only)</option>
+              </select>
+            </div>
+            <div class="setup-field" id="ecc-scalar-field">
+              <label for="ecc-scalar-input">Private scalar</label>
+              <select id="ecc-scalar-input">
+                <option value="">Generate randomly</option>
+                {% for scalar in range(1, 7) %}
+                <option value="{{ scalar }}">Choose {{ scalar }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <button class="setup-button" id="setup-key-button" type="button">GENERATE KEYPAIR</button>
+          {# JavaScript populates public values first; private values need a separate one-use request. #}
+          <div class="key-setup-result" id="key-setup-result" hidden aria-live="polite">
+            <div class="key-setup-result-heading">
+              <span id="key-setup-title-result">Public instance</span>
+              <span class="key-capability" id="key-capability-status"></span>
+            </div>
+            <p class="micro-label">PUBLIC INSTANCE</p>
+            <dl class="key-fields" id="public-key-fields"></dl>
+            <p class="setup-capability-copy" id="setup-capability-copy"></p>
+            <button class="reveal-key-button" id="reveal-private-button" type="button">REVEAL PRIVATE KEY</button>
+            <dl class="key-fields private-key-fields" id="private-key-fields" hidden></dl>
+          </div>
+        </section>
+      </div>
+
+    </section>
+
+    {# The slot preserves flow height when the run controls dock at the viewport bottom. #}
+    <div class="run-ribbon-slot" id="run-ribbon-slot">
+      <section class="run-panel" id="run-ribbon" aria-labelledby="run-title" data-state="waiting">
+        <form id="run-form">
+          <input type="hidden" id="algorithm-input" name="algorithm" value="rsa">
+          <div class="run-context" role="status">
+            <p class="section-index">03 / SIMULATE <span class="aer-badge">AER / IDEAL</span></p>
+            <h2 id="run-title">Generate a keypair first</h2>
+            <p class="run-copy" id="run-context-detail">No public key selected</p>
+          </div>
+          <div class="run-controls">
+            <div class="default-setting">
+              <span>SHOTS</span><strong id="shot-count-display">256</strong>
+            </div>
+            <details class="advanced-settings">
+              <summary><span>Settings</span><span class="settings-toggle" aria-hidden="true">+</span></summary>
+              <div class="settings-fields">
+                <label for="shots-input">Shots <span>1–4096</span></label>
+                <input id="shots-input" name="shots" type="number" min="1" max="4096" value="256" inputmode="numeric">
+                <label for="seed-input">Random seed <span>optional</span></label>
+                <input id="seed-input" name="seed" type="number" min="0" max="4294967295" placeholder="Random each run">
+                <p>Blank chooses a new seed each run. Enter a value to reproduce a run.</p>
+              </div>
+            </details>
+          </div>
+          <button class="run-button" id="run-button" type="submit" disabled><span>RUN SIMULATION</span><span class="button-arrow" aria-hidden="true">→</span></button>
+        </form>
+      </section>
+    </div>
+
+    {# Stable stage containers receive real workflow events, not simulated progress counters. #}
+    <section id="result-section" class="demo-flow" aria-live="polite" aria-busy="false">
+      <div class="flow-result-heading">
+        <div><p class="section-index">THE RUN</p><h2 id="result-title">Build a keypair to begin</h2></div>
+        <span class="result-status" id="result-status" hidden></span>
+      </div>
+      <p class="result-summary" id="result-summary">The public input and each measured recovery step will appear here.</p>
+      <p class="run-metadata" id="run-metadata"></p>
+
+      <section class="flow-section" data-flow-section="public_input" aria-labelledby="flow-public-title">
+        <div class="flow-section-heading"><h3 id="flow-public-title">1. Classical Preprocessing</h3><span class="flow-state" data-flow-state="public_input">WAITING FOR KEY SETUP</span></div>
+        <div class="flow-content" id="flow-public-content"><p class="flow-placeholder">RSA base/GCD checks or ECC public-input validation appear here.</p></div>
+      </section>
+
+      <section class="flow-section" data-flow-section="quantum_observation" aria-labelledby="flow-observation-title">
+        <div class="flow-section-heading"><h3 id="flow-observation-title">2. Quantum Observation</h3><span class="flow-state" data-flow-state="quantum_observation">WAITING</span></div>
+        <div class="flow-content" id="flow-observation-content"><p class="flow-placeholder">Circuit details and actual measurements appear after the run.</p></div>
+      </section>
+
+      <section class="flow-section" data-flow-section="recovered_structure" aria-labelledby="flow-structure-title">
+        <div class="flow-section-heading"><h3 id="flow-structure-title">3. Recovered Structure</h3><span class="flow-state" data-flow-state="recovered_structure">WAITING</span></div>
+        <div class="flow-content" id="flow-structure-content"><p class="flow-placeholder">Order or frequency constraints are derived from observed samples.</p></div>
+      </section>
+
+      <section class="flow-section" data-flow-section="secret_recovery" aria-labelledby="flow-secret-title">
+        <div class="flow-section-heading"><h3 id="flow-secret-title">4. Secret Recovery</h3><span class="flow-state" data-flow-state="secret_recovery">WAITING</span></div>
+        <div class="flow-content" id="flow-secret-content"><p class="flow-placeholder">A candidate appears only when the measured structure supports one.</p></div>
+      </section>
+
+      <section class="flow-section" data-flow-section="validation" aria-labelledby="flow-validation-title">
+        <div class="flow-section-heading"><h3 id="flow-validation-title">5. Validation</h3><span class="flow-state" data-flow-state="validation">WAITING</span></div>
+        <div class="flow-content" id="flow-validation-content"><p class="flow-placeholder">The candidate is checked using public key data.</p></div>
+      </section>
+
+      {# Preserve complete event evidence here even when the main view aggregates or paginates it. #}
+      <details class="trace-details">
+        <summary>Technical details <span aria-hidden="true">+</span></summary>
+        <ol id="event-trace" class="event-trace"></ol>
+        <ul id="limitations" class="limitation-list"></ul>
+      </details>
+    </section>
+
+    {# Keep the toy-versus-production limitation visible independently of a run's outcome. #}
+    <section class="scale-section" aria-labelledby="scale-title">
+      <div class="scale-label"><span class="scale-index">04</span><span>THE SCALE GAP</span></div>
+      <div class="scale-copy">
+        <h2 id="scale-title">A toy recovery is a mechanism, <em>not a production break.</em></h2>
+        <p>These fixed-instance circuits run in an ideal local simulator.<br>They do not demonstrate quantum advantage, fault tolerance, scalable reversible arithmetic, or attacks on production keys.</p>
+      </div>
+      <div class="scale-mark" aria-hidden="true"><span>SMALL INPUT</span><b>≠</b><span>SMALL THREAT</span></div>
+    </section>
+
+    <footer class="footer">
+      <span>BREAKING PKC <b>·</b> EDUCATIONAL DEMONSTRATOR</span>
+      <span>PYTHON WORKFLOWS <b>·</b> LOCAL IDEAL SIMULATION</span>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="alert" hidden></div>
+</body>
+</html>

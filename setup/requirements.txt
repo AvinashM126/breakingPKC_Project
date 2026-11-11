@@ -1,0 +1,8 @@
+# Direct runtime and test dependencies for CPython 3.14.
+# The user installs these from the approved package source.
+setuptools==80.9.0
+Flask==3.1.2
+cryptography==50.0.2
+qiskit==2.5.2
+qiskit-aer==0.17.2
+pytest==9.1.1

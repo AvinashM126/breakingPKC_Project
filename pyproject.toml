@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "breakingpkc-demonstrator"
+version = "0.1.0"
+description = "Local educational RSA and ECC quantum-threat demonstrator"
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "Flask==3.1.2",
+    "cryptography==50.0.2",
+    "qiskit==2.5.2",
+    "qiskit-aer==0.17.2",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["breakingpkc", "breakingpkc.*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+breakingpkc = ["web/templates/*.html", "web/static/css/*.css", "web/static/js/*.js"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
